@@ -1,0 +1,80 @@
+{
+  "version": "1.0.0",
+  "name": "Tracemob",
+  "type": "konnector",
+  "language": "node",
+  "icon": "icon.png",
+  "slug": "template",
+  "source": "git@github.com:konnectors/template.git",
+  "editor": "Cozy",
+  "vendor_link": "https://agremob.com",
+  "categories": ["transport"],
+  "fields": {
+    "login": {
+      "type": "email"
+    },
+    "password": {
+      "type": "password"
+    }
+  },
+  "data_types": [
+    "geojson"
+  ],
+  "screenshots": [],
+  "permissions": {
+    "accounts": {
+      "type": "io.cozy.accounts"
+    },
+    "geojson": {
+      "type": "io.cozy.timeseries.geojson"
+    }
+  },
+  "developer": {
+    "name": "Cozy Cloud",
+    "url": "https://cozy.io"
+  },
+  "langs": ["fr", "en"],
+  "locales": {
+    "fr": {
+      "short_description": "Récupère vos déplacements",
+      "long_description": "Récupère vos déplacements Agremob",
+      "permissions": {
+        "geojson": {
+          "description": "Utilisé pour sauvegarder vos déplacements"
+        },
+        "accounts": {
+          "description": "Utilisé pour obtenir les données du compte"
+        }
+      },
+      "fields": {
+        "providerId": {
+          "label": "Fournisseur du service"
+        },
+        "token": {
+          "label": "Token"
+        }
+      }
+    },
+    "en": {
+      "short_description": "Fetch your trips",
+      "long_description": "Fetch your trips from Agremob",
+      "permissions": {
+        "geojson": {
+          "description": "Required to save your trips"
+        },
+        "accounts": {
+          "description": "Required to get the account's data"
+        }
+      },
+      "fields": {
+        "providerId": {
+          "label": "Service provider"
+        },
+        "token": {
+          "label": "Token"
+        }
+      }
+    }
+  },
+  "manifest_version": "2"
+}
