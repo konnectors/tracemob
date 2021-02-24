@@ -4,7 +4,7 @@
   "type": "konnector",
   "language": "node",
   "icon": "icon.png",
-  "slug": "template",
+  "slug": "tracemob",
   "source": "git@github.com:konnectors/template.git",
   "editor": "Cozy",
   "vendor_link": "https://agremob.com",
