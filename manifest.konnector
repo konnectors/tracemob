@@ -15,6 +15,15 @@
     },
     "password": {
       "type": "password"
+    },
+    "providerId": {
+      "type": "dropdown",
+      "options": [
+        {
+          "name": "La Rochelle",
+          "value": "0"
+        }
+      ]
     }
   },
   "data_types": [
@@ -50,8 +59,8 @@
         "providerId": {
           "label": "Fournisseur du service"
         },
-        "token": {
-          "label": "Token"
+        "password": {
+          "label": "Identifiant secret"
         }
       }
     },
@@ -70,8 +79,8 @@
         "providerId": {
           "label": "Service provider"
         },
-        "token": {
-          "label": "Token"
+        "password": {
+          "label": "Secret identifier"
         }
       }
     }
