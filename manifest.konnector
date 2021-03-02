@@ -9,6 +9,7 @@
   "editor": "Cozy",
   "vendor_link": "https://agremob.com",
   "categories": ["transport"],
+  "frequency": "daily",
   "fields": {
     "login": {
       "type": "email"
