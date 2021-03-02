@@ -42,6 +42,7 @@ async function start(fields) {
 
   /* Get the trips starting date */
   let startDate
+  let firstRun = false
   try {
     const accountData = await this.getAccountData()
     if (accountData && accountData.lastSavedTripDate) {
@@ -57,11 +58,17 @@ async function start(fields) {
       return
     }
     startDate = new Date(timestamps.start_ts * 1000)
+    firstRun = true
   }
 
   /* Extract the days having saved trips */
   log('info', `Fetch trips metadata from ${startDate.toISOString()}`)
-  const trips = await getServerCollection(userToken, startDate, TRIP_COLLECTION)
+  const trips = await getServerCollectionFromDate(
+    userToken,
+    startDate,
+    TRIP_COLLECTION,
+    { excludeFirst: !firstRun }
+  )
   if (trips.length < 1) {
     log('info', 'No new trip found. Abort.')
     return
@@ -79,7 +86,7 @@ async function start(fields) {
   /* Fetch the actual trips for the relevant days */
   for (const day of Object.keys(tripDays)) {
     log('info', `Fetch trips on ${day}`)
-    const fullTripsForDay = await getTripsForDay(userToken, day) // what if the end is another day ?
+    const fullTripsForDay = await getTripsForDay(userToken, day)
     tripsToSave = tripsToSave.concat(fullTripsForDay)
   }
 
@@ -138,8 +145,13 @@ async function getTripsForDay(token, day) {
   return trips.timeline
 }
 
-async function getServerCollection(token, startDate, collection) {
-  // Note the expected timestamp is surprisingly in seconds
+async function getServerCollectionFromDate(
+  token,
+  startDate,
+  collection,
+  { excludeFirst = true } = {}
+) {
+  // Note the expected timestamp is in seconds
   const startTime = new Date(startDate).getTime() / 1000
   const endTime = Date.now() / 1000
   const body = {
@@ -150,10 +162,7 @@ async function getServerCollection(token, startDate, collection) {
   }
   const path = `${BASE_URL}/datastreams/find_entries/timestamp`
   const results = await request(path, { method: 'POST', body })
-  // The last processed trip is included in the response
-  return results.phone_data.filter(trip => {
-    return new Date(trip.metadata.write_fmt_time) >= startDate
-  })
+  return excludeFirst ? results.phone_data.slice(1) : results.phone_data
 }
 
 // TODO: use fetchTimeSeriesByIntervalAndSource from cozy-client models
