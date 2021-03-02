@@ -34,19 +34,22 @@ module.exports = new BaseKonnector(start)
  * Note the timestamps provided by the trace server
  * are surprinsingly given in seconds.
  */
-
 async function start(fields) {
   log('info', 'Start the Tracemob konnector')
 
-  const userToken = fields.password // TEMPORARY: the token should be retrieved through the trigger
+  const userToken = fields.password // TEMPORARY: the token should be retrieved from the account
 
   /* Get the trips starting date */
   let startDate
+  let startManualDate
   let firstRun = false
   try {
     const accountData = await this.getAccountData()
     if (accountData && accountData.lastSavedTripDate) {
       startDate = new Date(accountData.lastSavedTripDate)
+    }
+    if (accountData && accountData.lastSavedManualDate) {
+      startManualDate = new Date(accountData.lastSavedManualDate)
     }
   } catch (e) {
     log('error', e)
@@ -60,6 +63,9 @@ async function start(fields) {
     startDate = new Date(timestamps.start_ts * 1000)
     firstRun = true
   }
+  if (!startManualDate) {
+    startManualDate = startDate
+  }
 
   /* Extract the days having saved trips */
   log('info', `Fetch trips metadata from ${startDate.toISOString()}`)
@@ -70,8 +76,8 @@ async function start(fields) {
     { excludeFirst: !firstRun }
   )
   if (trips.length < 1) {
-    log('info', 'No new trip found. Abort.')
-    return
+    // Continue the execution to check manual entries
+    log('info', 'No new trip found.')
   }
 
   log('info', `${trips.length} trips to retrieve`)
@@ -97,31 +103,60 @@ async function start(fields) {
   log('info', `Save ${savePromises.length} trips`)
   await Promise.all(savePromises)
 
-  /* Find manual entries */
-  const manualPurposes = await getServerCollection(
-    userToken,
-    startDate,
-    PURPOSE_COLLECTION
-  )
-  const manualModes = await getServerCollection(
-    userToken,
-    startDate,
-    MODE_COLLECTION
-  )
-  /* Update trips accordingly to manual entries */
-  if (manualPurposes.length > 0) {
-    await updateTripsWithManualEntries(manualPurposes)
-  }
-  if (manualModes.length > 0) {
-    await updateTripsWithManualEntries(manualModes)
-  }
-
   /* Save the last processed trip date in the account */
   if (savePromises.length > 1) {
     try {
       const lastSavedTripDate = trips[trips.length - 1].metadata.write_fmt_time
-      log('info', `Save last trip end date : ${lastSavedTripDate}`)
+      log('info', `Save last trip date : ${lastSavedTripDate}`)
       await this.saveAccountData({ lastSavedTripDate })
+    } catch (e) {
+      log('error', e)
+    }
+  }
+
+  /* Find manual entries */
+  const manualPurposes = await getServerCollectionFromDate(
+    userToken,
+    startManualDate,
+    PURPOSE_COLLECTION,
+    { excludeFirst: !firstRun }
+  )
+  const manualModes = await getServerCollectionFromDate(
+    userToken,
+    startManualDate,
+    MODE_COLLECTION,
+    { excludeFirst: !firstRun }
+  )
+
+  /* Update trips accordingly to manual entries */
+  let lastPurposeDate = null
+  let lastModeDate = null
+  if (manualPurposes.length > 0) {
+    log('info', `Save ${manualPurposes.length} new manual purposes.`)
+    await updateTripsWithManualEntries(manualPurposes, {
+      entryKey: 'manual_purpose'
+    })
+    lastPurposeDate = new Date(
+      manualPurposes[manualPurposes.length - 1].metadata.write_fmt_time
+    )
+  }
+  if (manualModes.length > 0) {
+    log('info', `Save ${manualModes.length} new manual modes.`)
+    await updateTripsWithManualEntries(manualModes, { entryKey: 'manual_mode' })
+    lastModeDate = new Date(
+      manualModes[manualModes.length - 1].metadata.write_fmt_time
+    )
+  }
+
+  /* Save date of last manual entry */
+  if (lastPurposeDate || lastModeDate) {
+    try {
+      const lastSavedManualDate =
+        lastPurposeDate > lastModeDate
+          ? lastPurposeDate.toISOString()
+          : lastModeDate.toISOString()
+      log('info', `Save last manual date : ${lastSavedManualDate}`)
+      await this.saveAccountData({ lastSavedManualDate })
     } catch (e) {
       log('error', e)
     }
@@ -201,7 +236,7 @@ async function saveTrip(trip) {
 }
 
 // TODO: use saveTimeSeries from cozy-client models
-async function updateTripsWithManualEntries(manualEntries) {
+async function updateTripsWithManualEntries(manualEntries, { entryKey }) {
   for (const entry of manualEntries) {
     const savedTrip = await findSavedTripByDates(
       entry.data.start_fmt_time,
@@ -215,7 +250,7 @@ async function updateTripsWithManualEntries(manualEntries) {
       continue
     }
     const newTrip = { ...savedTrip }
-    newTrip.series[0].properties.manual_purpose = entry.data.label
+    newTrip.series[0].properties[entryKey] = entry.data.label
     await client.save(newTrip)
   }
 }
