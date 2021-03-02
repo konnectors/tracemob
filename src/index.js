@@ -24,10 +24,23 @@ async function start(fields) {
 
   const userToken = fields.password // TEMPORARY: the token should be retrieved through the trigger
 
-  let startDate = FIRST_MIN_DATE
-  if (this.accountId) {
+  /* Get the trips starting date */
+  let startDate
+  try {
     const accountData = await this.getAccountData()
-    startDate = accountData.lastSavedTripDate || FIRST_MIN_DATE
+    if (accountData && accountData.lastSavedTripDate) {
+      startDate = new Date(accountData.lastSavedTripDate)
+    }
+  } catch (e) {
+    log('error', 'No account found')
+  }
+  if (!startDate) {
+    const timestamps = await getFirstAndLastTripTimestamp(userToken)
+    if (!timestamps.start_ts || !timestamps.end_ts) {
+      log('info', 'No trip saved yet. Abort.')
+      return
+    }
+    startDate = new Date(timestamps.start_ts * 1000)
   }
   log('info', `Fetch trips metdata from ${startDate}`)
   const trips = await getTripsMetadataFromDate(userToken, startDate)
@@ -66,6 +79,14 @@ async function start(fields) {
     log('info', `Save last trip end date : ${lastSavedEndTripDate}`)
     await this.saveAccountData({ lastSavedEndTripDate })
   }
+}
+
+async function getFirstAndLastTripTimestamp(token) {
+  const path = `${BASE_URL}/pipeline/get_range_ts`
+  const body = {
+    user: token
+  }
+  return request(path, { method: 'POST', body })
 }
 
 async function getTripsForDay(token, day) {
