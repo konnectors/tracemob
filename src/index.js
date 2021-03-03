@@ -75,12 +75,8 @@ async function start(fields) {
     TRIP_COLLECTION,
     { excludeFirst: !firstRun }
   )
-  if (trips.length < 1) {
-    // Continue the execution to check manual entries
-    log('info', 'No new trip found.')
-  }
 
-  log('info', `${trips.length} trips to retrieve`)
+  log('info', `${trips.length} new trips to retrieve`)
   let tripDays = {}
   const tripStartDates = []
   trips.forEach(trip => {
