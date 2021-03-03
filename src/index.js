@@ -82,18 +82,22 @@ async function start(fields) {
 
   log('info', `${trips.length} trips to retrieve`)
   let tripDays = {}
+  const tripStartDates = []
   trips.forEach(trip => {
     const startTripDate = new Date(trip.data.start_fmt_time).toISOString()
     const day = startTripDate.split('T')[0]
     tripDays[day] = true
+    tripStartDates.push(trip.data.start_fmt_time)
   })
-  let tripsToSave = []
 
   /* Fetch the actual trips for the relevant days */
+  let tripsToSave = []
   for (const day of Object.keys(tripDays)) {
     log('info', `Fetch trips on ${day}`)
     const fullTripsForDay = await getTripsForDay(userToken, day)
-    tripsToSave = tripsToSave.concat(fullTripsForDay)
+    // The trips need to be filtered, as the day is not precise enough
+    const filteredTrips = filterTripsByDate(fullTripsForDay, tripStartDates)
+    tripsToSave = tripsToSave.concat(filteredTrips)
   }
 
   /* Save the trips in database */
@@ -161,6 +165,12 @@ async function start(fields) {
       log('error', e)
     }
   }
+}
+
+function filterTripsByDate(trips, tripStartDates) {
+  return trips.filter(trip => {
+    return tripStartDates.includes(trip.properties.start_fmt_time)
+  })
 }
 
 async function getFirstAndLastTripTimestamp(token) {
