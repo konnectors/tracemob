@@ -29,7 +29,6 @@
     "dev": "cozy-konnector-dev",
     "standalone": "cozy-konnector-standalone",
     "pretest": "npm run clean",
-    "test": "jest",
     "clean": "rm -rf ./data",
     "build": "webpack",
     "lint": "eslint --fix .",
@@ -42,7 +41,6 @@
   },
   "devDependencies": {
     "cozy-jobs-cli": "1.15.9",
-    "cozy-konnector-build": "1.1.7",
-    "jest": "^26.6.3"
+    "cozy-konnector-build": "1.1.7"
   }
 }
