@@ -3,13 +3,8 @@ process.env.SENTRY_DSN =
   'https://066ea9e6f9c84ef9aeb1f1592caff488@sentry.cozycloud.cc/147'
 
 const { BaseKonnector, log } = require('cozy-konnector-libs')
-const {
-  fetchAndSaveTrips,
-  fetchAndSaveManualEntries,
-  getFirstAndLastTripTimestamp
-} = require('./lib')
-
-// const timeseries = client.models.timeseries
+const { fetchAndSaveTrips, fetchAndSaveManualEntries } = require('./lib')
+const { getFirstAndLastTripTimestamp } = require('./trace-requests')
 
 module.exports = new BaseKonnector(start)
 
@@ -85,15 +80,3 @@ async function start(fields) {
     log('error', e)
   }
 }
-
-/* async function findSavedTripByDates(startDate, endDate) {
-  console.log(`query from  ${startDate} to ${endDate}`)
-  const trips = await timeseries.fetchTimeSeriesByIntervalAndSource(client, {
-    dataType: DATA_TYPE,
-    startDate,
-    endDate,
-    source: VENDOR
-  })
-  console.log('trips : ', trips)
-  return trips.data.length > 0 ? trips.data[0] : null
-}*/

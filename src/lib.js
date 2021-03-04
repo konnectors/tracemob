@@ -1,17 +1,13 @@
-const { requestFactory, log, cozyClient } = require('cozy-konnector-libs')
-const VENDOR = 'agremob.com'
-const BASE_URL = 'https://trace.grfmap.com:8081'
-const DATA_TYPE = 'geojson'
+const { log } = require('cozy-konnector-libs')
 const TRIP_COLLECTION = 'analysis/cleaned_trip'
 const PURPOSE_COLLECTION = 'manual/purpose_confirm'
 const MODE_COLLECTION = 'manual/mode_confirm'
-const request = requestFactory({
-  cheerio: false,
-  json: true,
-  jar: false
-})
 
-const client = cozyClient.new
+const {
+  getServerCollectionFromDate,
+  getTripsForDay
+} = require('./trace-requests')
+const { saveTrip, updateTripsWithManualEntries } = require('./timeseries.js')
 
 function filterTripsByDate(trips, tripStartDates) {
   return trips.filter(trip => {
@@ -19,6 +15,14 @@ function filterTripsByDate(trips, tripStartDates) {
   })
 }
 
+/**
+ * Fetch and save trips from a trace server
+ *
+ * @param {string} token - The user token
+ * @param {Date} startDate - The starting date
+ * @param {options} - The options
+ * @returns {Date} The date of the last saved trip
+ */
 module.exports.fetchAndSaveTrips = async function(
   token,
   startDate,
@@ -60,11 +64,19 @@ module.exports.fetchAndSaveTrips = async function(
   log('info', `Save ${savePromises.length} trips`)
   await Promise.all(savePromises)
 
-  return savePromises.length > 1
-    ? trips[trips.length - 1].metadata.write_fmt_time
+  return savePromises.length > 0
+    ? new Date(trips[trips.length - 1].metadata.write_fmt_time).toISOString()
     : null
 }
 
+/**
+ * Fetch and save manual data from a trace server
+ *
+ * @param {string} token - The user token
+ * @param {Date} startManualDate - The starting date
+ * @param {options} - The options
+ * @returns {Date} The date of the last saved manual data
+ */
 module.exports.fetchAndSaveManualEntries = async function(
   token,
   startManualDate,
@@ -110,96 +122,4 @@ module.exports.fetchAndSaveManualEntries = async function(
       : lastModeDate.toISOString()
   }
   return null
-}
-
-module.exports.getFirstAndLastTripTimestamp = async function(token) {
-  const path = `${BASE_URL}/pipeline/get_range_ts`
-  const body = {
-    user: token
-  }
-  return request(path, { method: 'POST', body })
-}
-
-async function getTripsForDay(token, day) {
-  const path = `${BASE_URL}/timeline/getTrips/${day}`
-  const body = {
-    user: token
-  }
-  const trips = await request(path, { method: 'POST', body })
-  return trips.timeline
-}
-
-async function getServerCollectionFromDate(
-  token,
-  startDate,
-  collection,
-  { excludeFirst = true } = {}
-) {
-  // Note the expected timestamp is in seconds
-  const startTime = new Date(startDate).getTime() / 1000
-  const endTime = Date.now() / 1000
-  const body = {
-    user: token,
-    start_time: startTime,
-    end_time: endTime,
-    key_list: [collection]
-  }
-  const path = `${BASE_URL}/datastreams/find_entries/timestamp`
-  const results = await request(path, { method: 'POST', body })
-  return excludeFirst ? results.phone_data.slice(1) : results.phone_data
-}
-
-// TODO: use fetchTimeSeriesByIntervalAndSource from cozy-client models
-async function findSavedTripByDates(startDate, endDate) {
-  const doctype = `io.cozy.timeseries.${DATA_TYPE}`
-  const query = client
-    .find(doctype)
-    .where({
-      source: VENDOR,
-      startDate: {
-        $gte: startDate
-      },
-      endDate: {
-        $lte: endDate
-      }
-    })
-    .indexFields(['source', 'startDate', 'endDate'])
-    .sortBy([{ source: 'desc' }, { startDate: 'desc' }, { endDate: 'desc' }])
-    .limitBy(1)
-  const trips = await client.query(query)
-  return trips.data.length > 0 ? trips.data[0] : null
-}
-
-// TODO: use saveTimeSeries from cozy-client models
-async function saveTrip(trip) {
-  const startDate = trip.properties.start_fmt_time
-  const endDate = trip.properties.end_fmt_time
-  const timeserie = {
-    _type: `io.cozy.timeseries.${DATA_TYPE}`,
-    series: [trip],
-    startDate,
-    endDate,
-    source: VENDOR
-  }
-  return client.save(timeserie)
-}
-
-// TODO: use saveTimeSeries from cozy-client models
-async function updateTripsWithManualEntries(manualEntries, { entryKey }) {
-  for (const entry of manualEntries) {
-    const savedTrip = await findSavedTripByDates(
-      entry.data.start_fmt_time,
-      entry.data.end_fmt_time
-    )
-    if (!savedTrip) {
-      log(
-        'error',
-        `No trip found for the manual entry from ${entry.data.start_fmt_time} to ${entry.data.end_fmt_time}`
-      )
-      continue
-    }
-    const newTrip = { ...savedTrip }
-    newTrip.series[0].properties[entryKey] = entry.data.label
-    await client.save(newTrip)
-  }
 }
