@@ -60,8 +60,11 @@
         "providerId": {
           "label": "Fournisseur du service"
         },
+        "login": {
+          "label": "Identifiant libre (ex. \"Samsung personnel\")"
+        },
         "password": {
-          "label": "Identifiant secret"
+          "label": "Identifiant secret (cf. onglet Profil de votre app TraceMob)"
         }
       }
     },
@@ -80,8 +83,11 @@
         "providerId": {
           "label": "Service provider"
         },
+        "login": {
+          "label": "Free-to-choose identifier (ex. \"personal Samsung\")"
+        },
         "password": {
-          "label": "Secret identifier"
+          "label": "Secret identifier (see Profile section on your Tracemob app)"
         }
       }
     }
