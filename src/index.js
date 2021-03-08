@@ -57,7 +57,8 @@ async function start(fields) {
   try {
     /* Fetch new trips from the start date and save them in geojson doctype */
     const lastSavedTripDate = await fetchAndSaveTrips(token, startDate, {
-      excludeFirst: !firstRun
+      excludeFirst: !firstRun,
+      accountId: this.accountId
     })
     if (lastSavedTripDate) {
       log('info', `Save last trip date : ${lastSavedTripDate}`)

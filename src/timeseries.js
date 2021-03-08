@@ -25,8 +25,20 @@ async function findSavedTripByDates(startDate, endDate) {
   return trips.data.length > 0 ? trips.data[0] : null
 }
 
+async function isTripInDatabaseForAccount(accountId, trip) {
+  const startDate = trip.properties.start_fmt_time
+  const endDate = trip.properties.end_fmt_time
+  const tripInDb = await findSavedTripByDates(startDate, endDate)
+  return tripInDb && tripInDb.cozyMetadata.sourceAccount === accountId
+}
+
 // TODO: use saveTimeSeries from cozy-client models
-const saveTrip = async function(trip) {
+const saveTripForAccount = async function(accountId, trip) {
+  const tripInDb = await isTripInDatabaseForAccount(accountId, trip)
+  if (tripInDb) {
+    // Avoid duplicates for the same account
+    return
+  }
   const startDate = trip.properties.start_fmt_time
   const endDate = trip.properties.end_fmt_time
   const timeserie = {
@@ -60,6 +72,6 @@ async function updateTripsWithManualEntries(manualEntries, { entryKey }) {
 }
 
 module.exports = {
-  saveTrip,
+  saveTripForAccount,
   updateTripsWithManualEntries
 }

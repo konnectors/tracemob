@@ -7,7 +7,10 @@ const {
   getServerCollectionFromDate,
   getTripsForDay
 } = require('./trace-requests')
-const { saveTrip, updateTripsWithManualEntries } = require('./timeseries.js')
+const {
+  saveTripForAccount,
+  updateTripsWithManualEntries
+} = require('./timeseries.js')
 
 function filterTripsByDate(trips, tripStartDates) {
   return trips.filter(trip => {
@@ -26,7 +29,7 @@ function filterTripsByDate(trips, tripStartDates) {
 module.exports.fetchAndSaveTrips = async function(
   token,
   startDate,
-  { excludeFirst = true }
+  { excludeFirst = true, accountId }
 ) {
   /* Extract the days having saved trips */
   log('info', `Fetch trips metadata from ${startDate.toISOString()}`)
@@ -59,7 +62,7 @@ module.exports.fetchAndSaveTrips = async function(
 
   /* Save the trips in database */
   const savePromises = tripsToSave.map(async trip => {
-    return new Promise(resolve => resolve(saveTrip(trip)))
+    return new Promise(resolve => resolve(saveTripForAccount(accountId, trip)))
   })
   log('info', `Save ${savePromises.length} trips`)
   await Promise.all(savePromises)
