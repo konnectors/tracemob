@@ -61,13 +61,11 @@ module.exports.fetchAndSaveTrips = async function(
   }
 
   /* Save the trips in database */
-  const savePromises = tripsToSave.map(async trip => {
-    return new Promise(resolve => resolve(saveTripForAccount(accountId, trip)))
-  })
-  log('info', `Save ${savePromises.length} trips`)
-  await Promise.all(savePromises)
-
-  return savePromises.length > 0
+  log('info', `Save ${tripsToSave.length} trips`)
+  for (const trip of tripsToSave) {
+    await saveTripForAccount(accountId, trip)
+  }
+  return tripsToSave.length > 0
     ? new Date(trips[trips.length - 1].metadata.write_fmt_time).toISOString()
     : null
 }
