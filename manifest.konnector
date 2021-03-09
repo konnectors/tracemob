@@ -19,6 +19,7 @@
     },
     "providerId": {
       "type": "dropdown",
+      "default": "0",
       "options": [
         {
           "name": "La Rochelle",
