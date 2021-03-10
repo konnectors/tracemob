@@ -24,7 +24,10 @@ module.exports = new BaseKonnector(start)
 async function start(fields) {
   log('info', 'Start the Tracemob konnector')
 
-  const token = fields.password // TEMPORARY: the token should be retrieved from the account
+  // We use the login field as an identifier that can be used as a device name.
+  const device = fields.login || 'Tracemob'
+  // TODO: the token might be retrieved directly in the account
+  const token = fields.password
 
   /* Get the trips starting date */
   let startDate
@@ -58,7 +61,8 @@ async function start(fields) {
     /* Fetch new trips from the start date and save them in geojson doctype */
     const lastSavedTripDate = await fetchAndSaveTrips(token, startDate, {
       excludeFirst: !firstRun,
-      accountId: this.accountId
+      accountId: this.accountId,
+      device
     })
     if (lastSavedTripDate) {
       log('info', `Save last trip date : ${lastSavedTripDate}`)
