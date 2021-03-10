@@ -29,7 +29,7 @@ function filterTripsByDate(trips, tripStartDates) {
 module.exports.fetchAndSaveTrips = async function(
   token,
   startDate,
-  { excludeFirst = true, accountId }
+  { excludeFirst = true, accountId, device }
 ) {
   /* Extract the days having saved trips */
   log('info', `Fetch trips metadata from ${startDate.toISOString()}`)
@@ -63,7 +63,7 @@ module.exports.fetchAndSaveTrips = async function(
   /* Save the trips in database */
   log('info', `Save ${tripsToSave.length} trips`)
   for (const trip of tripsToSave) {
-    await saveTripForAccount(accountId, trip)
+    await saveTripForAccount(accountId, device, trip)
   }
   return tripsToSave.length > 0
     ? new Date(trips[trips.length - 1].metadata.write_fmt_time).toISOString()

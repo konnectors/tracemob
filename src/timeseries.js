@@ -33,7 +33,7 @@ async function isTripInDatabaseForAccount(accountId, trip) {
 }
 
 // TODO: use saveTimeSeries from cozy-client models
-const saveTripForAccount = async function(accountId, trip) {
+const saveTripForAccount = async function(accountId, device, trip) {
   const tripInDb = await isTripInDatabaseForAccount(accountId, trip)
   if (tripInDb) {
     // Avoid duplicates for the same account
@@ -46,7 +46,8 @@ const saveTripForAccount = async function(accountId, trip) {
     series: [trip],
     startDate,
     endDate,
-    source: VENDOR
+    source: VENDOR,
+    captureDevice: device
   }
   return client.save(timeserie)
 }
