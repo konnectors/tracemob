@@ -1,6 +1,6 @@
 {
   "name": "cozy-konnector-tracemob",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -38,11 +38,11 @@
     "travisDeployKey": "./bin/generate_travis_deploy_key"
   },
   "dependencies": {
-    "cozy-konnector-libs": "4.42.0"
+    "cozy-konnector-libs": "4.40.1"
   },
   "devDependencies": {
-    "cozy-jobs-cli": "1.16.0",
-    "cozy-konnector-build": "1.2.0",
+    "cozy-jobs-cli": "1.15.10",
+    "cozy-konnector-build": "1.1.8",
     "jest": "^26.6.3"
   }
 }
