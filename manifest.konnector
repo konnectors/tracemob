@@ -70,7 +70,7 @@
           "label": "Identifiant libre (ex. \"Samsung personnel\")"
         },
         "password": {
-          "label": "Identifiant secret (cf. onglet Profil de votre app TraceMob)"
+          "label": "Identifiant Secret (cf. Profil dans l'app Mobile)"
         }
       }
     },
