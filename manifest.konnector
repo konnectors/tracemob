@@ -90,10 +90,10 @@
           "label": "Service provider"
         },
         "login": {
-          "label": "Free-to-choose identifier (ex. \"personal Samsung\")"
+          "label": "Free-to-choose identifier (ex. \"My Samsung\")"
         },
         "password": {
-          "label": "Secret identifier (see Profile section on your Tracemob app)"
+          "label": "Secret identifier (see Profile in mobile app)"
         }
       }
     }
