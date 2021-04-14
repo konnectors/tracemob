@@ -1,5 +1,5 @@
 const BASE_URL = 'https://trace.grfmap.com:8081'
-const { log, errors, requestFactory } = require('cozy-konnector-libs')
+const { requestFactory } = require('cozy-konnector-libs')
 
 const request = requestFactory({
   cheerio: false,
@@ -18,10 +18,7 @@ const getFirstAndLastTripTimestamp = async function(token) {
   const body = {
     user: token
   }
-  return request(path, { method: 'POST', body }).catch(err => {
-    log('info', err && err.message)
-    throw new Error(errors.VENDOR_DOWN)
-  })
+  return request(path, { method: 'POST', body })
 }
 
 /**
@@ -39,23 +36,17 @@ const getServerCollectionFromDate = async function(
   collection,
   { excludeFirst = true } = {}
 ) {
-  let results
-  try {
-    // Note the expected timestamp is in seconds
-    const startTime = new Date(startDate).getTime() / 1000
-    const endTime = Date.now() / 1000
-    const body = {
-      user: token,
-      start_time: startTime,
-      end_time: endTime,
-      key_list: [collection]
-    }
-    const path = `${BASE_URL}/datastreams/find_entries/timestamp`
-    results = await request(path, { method: 'POST', body })
-  } catch (err) {
-    log('info', err && err.message)
-    throw new Error(errors.VENDOR_DOWN)
+  // Note the expected timestamp is in seconds
+  const startTime = new Date(startDate).getTime() / 1000
+  const endTime = Date.now() / 1000
+  const body = {
+    user: token,
+    start_time: startTime,
+    end_time: endTime,
+    key_list: [collection]
   }
+  const path = `${BASE_URL}/datastreams/find_entries/timestamp`
+  const results = await request(path, { method: 'POST', body })
   return excludeFirst ? results.phone_data.slice(1) : results.phone_data
 }
 
@@ -67,17 +58,11 @@ const getServerCollectionFromDate = async function(
  * @returns {object} - The full trips for this day
  */
 const getTripsForDay = async function(token, day) {
-  let trips
-  try {
-    const path = `${BASE_URL}/timeline/getTrips/${day}`
-    const body = {
-      user: token
-    }
-    trips = await request(path, { method: 'POST', body })
-  } catch (err) {
-    log('info', err && err.message)
-    throw new Error(errors.VENDOR_DOWN)
+  const path = `${BASE_URL}/timeline/getTrips/${day}`
+  const body = {
+    user: token
   }
+  const trips = await request(path, { method: 'POST', body })
   return trips.timeline
 }
 

@@ -2,7 +2,7 @@ process.env.SENTRY_DSN =
   process.env.SENTRY_DSN ||
   'https://066ea9e6f9c84ef9aeb1f1592caff488@sentry.cozycloud.cc/147'
 
-const { BaseKonnector, log } = require('cozy-konnector-libs')
+const { BaseKonnector, log, errors } = require('cozy-konnector-libs')
 const { fetchAndSaveTrips, fetchAndSaveManualEntries } = require('./lib')
 const { getFirstAndLastTripTimestamp } = require('./trace-requests')
 
@@ -41,23 +41,19 @@ async function start(fields) {
     if (accountData && accountData.lastSavedManualDate) {
       startManualDate = new Date(accountData.lastSavedManualDate)
     }
-  } catch (e) {
-    log('error', e)
-  }
-  if (!startDate) {
-    const timestamps = await getFirstAndLastTripTimestamp(token)
-    if (!timestamps.start_ts || !timestamps.end_ts) {
-      log('info', 'No trip saved yet. Abort.')
-      return
+    if (!startDate) {
+      const timestamps = await getFirstAndLastTripTimestamp(token)
+      if (!timestamps.start_ts || !timestamps.end_ts) {
+        log('info', 'No trip saved yet. Abort.')
+        return
+      }
+      startDate = new Date(timestamps.start_ts * 1000)
+      firstRun = true
     }
-    startDate = new Date(timestamps.start_ts * 1000)
-    firstRun = true
-  }
-  if (!startManualDate) {
-    startManualDate = startDate
-  }
+    if (!startManualDate) {
+      startManualDate = startDate
+    }
 
-  try {
     /* Fetch new trips from the start date and save them in geojson doctype */
     const lastSavedTripDate = await fetchAndSaveTrips(token, startDate, {
       excludeFirst: !firstRun,
@@ -81,7 +77,11 @@ async function start(fields) {
       log('info', `Save last manual date : ${lastSavedManualDate}`)
       await this.saveAccountData({ lastSavedManualDate })
     }
-  } catch (e) {
-    log('error', e)
+  } catch (err) {
+    log('error', err && err.message)
+    if (err.statusCode === 403) {
+      throw new Error(errors.LOGIN_FAILED)
+    }
+    throw new Error(errors.VENDOR_DOWN)
   }
 }
