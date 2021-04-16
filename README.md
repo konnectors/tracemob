@@ -1,4 +1,4 @@
-[Cozy][cozy] <YOUR SUPER NEW KONNECTOR NAME>
+[Cozy][cozy] Tracemob
 =======================================
 
 What's Cozy?
@@ -11,8 +11,10 @@ What's Cozy?
 What is this konnector about ?
 ------------------------------
 
-This konnector retrieves your <SOME DATA> and <SOME OTHER DATA> from <SERVICE>
-<YOUR DESCRIPTION HERE>
+This konnector retrieves your trips saved by the Tracemob app in a GeoJSON format. 
+You can then visualize them directly on a map.
+
+See the [Tracemob](https://github.com/fabmob/tracemob-phone) repository for more technical insights.
 
 ### Open a Pull-Request
 
