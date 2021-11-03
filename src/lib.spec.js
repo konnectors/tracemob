@@ -4,10 +4,10 @@ const {
   getServerCollectionFromDate,
   getTripsForDay
 } = require('./trace-requests.js')
-const { updateTripsWithManualEntries } = require('./timeseries.js')
+const { updateTripsWithManualEntries } = require('./save.js')
 
-jest.mock('./timeseries', () => ({
-  saveTrip: jest.fn(),
+jest.mock('./save', () => ({
+  saveTrips: jest.fn(),
   updateTripsWithManualEntries: jest.fn()
 }))
 
@@ -74,22 +74,12 @@ describe('konnector', () => {
       }
     ]
 
-    getServerCollectionFromDate.mockResolvedValue(mockedTrips)
     getTripsForDay.mockResolvedValueOnce(fullTripsDay1)
     getTripsForDay.mockResolvedValueOnce(fullTripsDay2)
 
-    const startDate = new Date('2021-01-01')
-
-    const lastTripDate = await fetchAndSaveTrips(token, startDate, {
+    const lastTripDate = await fetchAndSaveTrips(token, mockedTrips, {
       excludeFirst: false
     })
-
-    expect(getServerCollectionFromDate).toHaveBeenCalledWith(
-      token,
-      startDate,
-      'analysis/cleaned_trip',
-      { excludeFirst: false }
-    )
 
     expect(getTripsForDay).toHaveBeenCalledTimes(2)
     expect(getTripsForDay).toHaveBeenNthCalledWith(1, token, '2021-02-01')

@@ -1,6 +1,5 @@
-const BASE_URL = 'https://trace.grfmap.com:8081'
-const { requestFactory } = require('cozy-konnector-libs')
-
+const requestFactory = require('cozy-konnector-libs/dist/libs/request')
+const { BASE_URL } = require('./const')
 const request = requestFactory({
   cheerio: false,
   json: true,
