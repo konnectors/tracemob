@@ -20,6 +20,9 @@ function createChunks(tripsMetadata, chunkSize) {
 }
 
 async function keepOnlyNewTrips(trips, accountId) {
+  if (trips.length < 1) {
+    return []
+  }
   const firstDate = trips[0].properties.start_fmt_time
   const lastDate = trips[trips.length - 1].properties.start_fmt_time
   const existingTrips = await findSavedTripByDates(firstDate, lastDate, {
