@@ -7,10 +7,12 @@ function canSaveNextTripsChunk(startExecTime, timeout) {
   return executionTimeSeconds < timeout
 }
 
-async function restartKonnector(client) {
+async function restartKonnector(client, accountId) {
   const args = {
-    slug: 'tracemob'
+    konnector: 'tracemob',
+    account: accountId
   }
+
   const jobCollection = client.collection('io.cozy.jobs')
   return jobCollection.create('konnector', args)
 }
