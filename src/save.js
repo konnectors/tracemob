@@ -27,11 +27,11 @@ async function saveTrips(trips, { accountId, device }) {
   }
 }
 
-// TODO: use saveTimeSeries from cozy-client models
 async function updateTripsWithManualEntries(
   manualEntries,
   { accountId, entryKey }
 ) {
+  const tripsToUpdate = []
   for (const entry of manualEntries) {
     const savedTrip = await findSavedTripByDates(
       entry.data.start_fmt_time,
@@ -45,9 +45,12 @@ async function updateTripsWithManualEntries(
       )
       continue
     }
-    const newTrip = { ...savedTrip[0] }
+    const newTrip = { ...savedTrip[0], _type: GEOJSON_DOCTYPE }
     newTrip.series[0].properties[entryKey] = entry.data.label
-    await client.save(newTrip)
+    tripsToUpdate.push(newTrip)
+  }
+  if (tripsToUpdate.length > 0) {
+    await client.saveAll(tripsToUpdate)
   }
 }
 
