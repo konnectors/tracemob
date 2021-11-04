@@ -31,13 +31,13 @@ describe('timeout', () => {
     lastSavedManualDate: Date.now()
   }
   it('should not restart execution when timeout is not reached', async () => {
-    process.env.COZY_TIME_LIMIT = 5000
+    process.env.COZY_TIME_LIMIT = 3600 // in seconds
     await run({ fields: {}, accountData, accountId: 'accountId' })
     expect(restartKonnector).toHaveBeenCalledTimes(0)
   })
 
   it('should restart execution when timeout is detected', async () => {
-    process.env.COZY_TIME_LIMIT = 5
+    process.env.COZY_TIME_LIMIT = 1
     await run({ fields: {}, accountData, accountId: 'accountId' })
     expect(restartKonnector).toHaveBeenCalledTimes(1)
   })
@@ -50,7 +50,7 @@ describe('save data', () => {
   }
 
   beforeEach(() => {
-    process.env.COZY_TIME_LIMIT = 5000
+    process.env.COZY_TIME_LIMIT = 3600 // in seconds
   })
 
   it('should save data in chunks', async () => {

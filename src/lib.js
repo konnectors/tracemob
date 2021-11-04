@@ -111,7 +111,7 @@ module.exports.fetchAndSaveManualEntries = async function(
   let lastPurposeDate = null
   let lastModeDate = null
   if (manualPurposes.length > 0) {
-    log('info', `Save ${manualPurposes.length} new manual purposes.`)
+    log('info', `Found ${manualPurposes.length} new manual purposes.`)
     await updateTripsWithManualEntries(manualPurposes, {
       entryKey: 'manual_purpose',
       accountId
@@ -121,7 +121,7 @@ module.exports.fetchAndSaveManualEntries = async function(
     )
   }
   if (manualModes.length > 0) {
-    log('info', `Save ${manualModes.length} new manual modes.`)
+    log('info', `Found ${manualModes.length} new manual modes.`)
     await updateTripsWithManualEntries(manualModes, {
       accountId,
       entryKey: 'manual_mode'

@@ -19,7 +19,7 @@ const client = cozyClient.new
 
 const getTimeout = () => {
   const maxExecutionTimeSeconds = parseInt(process.env.COZY_TIME_LIMIT, 10)
-  return maxExecutionTimeSeconds - 100
+  return maxExecutionTimeSeconds - 100 // purely arbitrary
 }
 
 const startExecTime = new Date()
