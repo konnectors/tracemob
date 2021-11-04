@@ -40,6 +40,9 @@
     },
     "geojson": {
       "type": "io.cozy.timeseries.geojson"
+    },
+    "jobs": {
+      "type": "io.cozy.jobs"
     }
   },
   "developer": {
