@@ -79,7 +79,7 @@ const run = async ({ fields, accountData, accountId }) => {
       if (!canSaveNextTripsChunk(startExecTime, getTimeout())) {
         log('info', `No time left to save the remaining trips, restart job.`)
         // Abort the execution to avoid timeout and restart the job
-        await restartKonnector(client)
+        await restartKonnector(client, accountId)
         return
       }
     }
@@ -87,7 +87,7 @@ const run = async ({ fields, accountData, accountId }) => {
     if (!canSaveNextTripsChunk(startExecTime, getTimeout())) {
       log('info', `No time left to save the manual entries, restart job.`)
       // Abort the execution to avoid timeout and restart the job
-      await restartKonnector(client)
+      await restartKonnector(client, accountId)
       return
     }
     /* Fetch new manual entries from the start date and update trips accordingly */
