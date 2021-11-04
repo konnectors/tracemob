@@ -5,7 +5,7 @@ const { VENDOR, GEOJSON_DOCTYPE } = require('./const')
 
 const client = cozyClient.new
 
-// TODO: use fetchTimeSeriesByIntervalAndSource from cozy-client models
+// TODO: use (and adapt) fetchTimeSeriesByIntervalAndSource from cozy-client models
 async function findSavedTripByDates(firstDate, lastDate, { accountId, limit }) {
   const query = Q(GEOJSON_DOCTYPE)
     .where({
