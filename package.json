@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "cozy-client": "^26.0.0",
-    "cozy-konnector-libs": "4.43.0",
+    "cozy-konnector-libs": "4.44.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
