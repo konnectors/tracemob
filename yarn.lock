@@ -2136,6 +2136,32 @@ cozy-client@23.4.0:
     sift "^6.0.0"
     url-search-params-polyfill "^7.0.0"
 
+cozy-client@26.0.0:
+  version "26.0.0"
+  resolved "https://registry.yarnpkg.com/cozy-client/-/cozy-client-26.0.0.tgz#fac4021f14b308b08c45e16f15719224ad4dee8b"
+  integrity sha512-6Vh1530bN9vhe0kBkUjQsLKTdecQBR71qrBv216t85fTDmTh6t8nQfGQkyTtVUn68FzmjjLGwstvlHTPcAgY4w==
+  dependencies:
+    "@cozy/minilog" "1.0.0"
+    "@types/jest" "^26.0.20"
+    "@types/lodash" "^4.14.170"
+    btoa "^1.2.1"
+    cozy-device-helper "^1.12.0"
+    cozy-flags "2.7.1"
+    cozy-logger "^1.6.0"
+    cozy-stack-client "^26.0.0"
+    json-stable-stringify "^1.0.1"
+    lodash "^4.17.13"
+    microee "^0.0.6"
+    node-fetch "^2.6.1"
+    open "7.4.2"
+    prop-types "^15.6.2"
+    react-redux "^7.2.0"
+    redux "3 || 4"
+    redux-thunk "^2.3.0"
+    server-destroy "^1.0.1"
+    sift "^6.0.0"
+    url-search-params-polyfill "^8.0.0"
+
 cozy-client@^23.18.0:
   version "23.22.0"
   resolved "https://registry.yarnpkg.com/cozy-client/-/cozy-client-23.22.0.tgz#2cc3c256635dcbbaef160bf37df7480a1938967c"
@@ -2161,32 +2187,6 @@ cozy-client@^23.18.0:
     server-destroy "^1.0.1"
     sift "^6.0.0"
     url-search-params-polyfill "^7.0.0"
-
-cozy-client@^26.0.0:
-  version "26.0.0"
-  resolved "https://registry.yarnpkg.com/cozy-client/-/cozy-client-26.0.0.tgz#fac4021f14b308b08c45e16f15719224ad4dee8b"
-  integrity sha512-6Vh1530bN9vhe0kBkUjQsLKTdecQBR71qrBv216t85fTDmTh6t8nQfGQkyTtVUn68FzmjjLGwstvlHTPcAgY4w==
-  dependencies:
-    "@cozy/minilog" "1.0.0"
-    "@types/jest" "^26.0.20"
-    "@types/lodash" "^4.14.170"
-    btoa "^1.2.1"
-    cozy-device-helper "^1.12.0"
-    cozy-flags "2.7.1"
-    cozy-logger "^1.6.0"
-    cozy-stack-client "^26.0.0"
-    json-stable-stringify "^1.0.1"
-    lodash "^4.17.13"
-    microee "^0.0.6"
-    node-fetch "^2.6.1"
-    open "7.4.2"
-    prop-types "^15.6.2"
-    react-redux "^7.2.0"
-    redux "3 || 4"
-    redux-thunk "^2.3.0"
-    server-destroy "^1.0.1"
-    sift "^6.0.0"
-    url-search-params-polyfill "^8.0.0"
 
 cozy-device-helper@^1.12.0:
   version "1.12.0"
@@ -4605,7 +4605,7 @@ lodash@4, lodash@^4.14.2, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lod
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
 
-lodash@^4.17.21, lodash@^4.7.0:
+lodash@4.17.21, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
