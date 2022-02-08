@@ -45,6 +45,6 @@
   "devDependencies": {
     "cozy-jobs-cli": "1.16.7",
     "cozy-konnector-build": "1.2.4",
-    "jest": "27.0.6"
+    "jest": "27.5.1"
   }
 }
