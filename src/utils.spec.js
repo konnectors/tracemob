@@ -1,6 +1,9 @@
 jest.mock('./queries.js')
 const { findSavedTripByDates } = require('./queries')
-const { keepOnlyNewTrips } = require('./utils')
+const {
+  keepOnlyNewTrips,
+  keepMoreRecentTripsWhenDuplicates
+} = require('./utils')
 
 describe('remove duplicates', () => {
   const trips = [
@@ -54,5 +57,42 @@ describe('remove duplicates', () => {
     findSavedTripByDates.mockResolvedValueOnce([])
     tripsWithoutDuplicates = await keepOnlyNewTrips(trips)
     expect(tripsWithoutDuplicates).toEqual(trips)
+  })
+
+  it('should remove oldest duplicates ', () => {
+    const tripsWithDuplicates = [
+      {
+        _id: '1',
+        startDate: '2022-01-01',
+        endDate: '2022-01-01'
+      },
+      {
+        _id: '2',
+        startDate: '2022-01-02',
+        endDate: '2022-01-02'
+      },
+      {
+        _id: '2',
+        startDate: '2022-01-01',
+        endDate: '2022-01-01'
+      },
+      {
+        _id: '2',
+        startDate: '2022-01-03',
+        endDate: '2022-01-03'
+      },
+      {
+        _id: '3',
+        startDate: '2022-01-05',
+        endDate: '2022-01-05'
+      }
+    ]
+    const noDuplicates = keepMoreRecentTripsWhenDuplicates(tripsWithDuplicates)
+    expect(noDuplicates.length).toBe(3) // or not to be
+    expect(noDuplicates[1]).toEqual({
+      _id: '2',
+      startDate: '2022-01-03',
+      endDate: '2022-01-03'
+    })
   })
 })

@@ -1,6 +1,5 @@
-const { chunk } = require('lodash')
+const { chunk, differenceWith, sortBy, uniqBy } = require('lodash')
 const { findSavedTripByDates } = require('./queries')
-const { differenceWith } = require('lodash')
 
 function canSaveNextTripsChunk(startExecTime, timeout) {
   const executionTimeSeconds = (new Date() - startExecTime) / 1000
@@ -45,9 +44,15 @@ async function keepOnlyNewTrips(trips, accountId) {
   return tripsToSave
 }
 
+function keepMoreRecentTripsWhenDuplicates(trips) {
+  const sortedDescending = sortBy(trips, ['startDate']).reverse()
+  return uniqBy(sortedDescending, '_id')
+}
+
 module.exports = {
   canSaveNextTripsChunk,
   restartKonnector,
   createChunks,
-  keepOnlyNewTrips
+  keepOnlyNewTrips,
+  keepMoreRecentTripsWhenDuplicates
 }
