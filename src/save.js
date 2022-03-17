@@ -3,7 +3,10 @@ const { log } = require('cozy-konnector-libs')
 const { Q } = require('cozy-client')
 
 const { findSavedTripByDates } = require('./queries')
-const { keepOnlyNewTrips } = require('./utils')
+const {
+  keepOnlyNewTrips,
+  keepMoreRecentTripsWhenDuplicates
+} = require('./utils')
 const { VENDOR, GEOJSON_DOCTYPE, ACCOUNT_DOCTYPE } = require('./const')
 
 const client = cozyClient.new
@@ -50,7 +53,14 @@ async function updateTripsWithManualEntries(
     tripsToUpdate.push(newTrip)
   }
   if (tripsToUpdate.length > 0) {
-    await client.saveAll(tripsToUpdate)
+    const tripsNoDuplicates = keepMoreRecentTripsWhenDuplicates(tripsToUpdate)
+    for (const trip of tripsNoDuplicates) {
+      log(
+        'info',
+        `Update trip ${trip._id} from ${trip.startDate} to ${trip.endDate}`
+      )
+      await client.save(trip)
+    }
   }
 }
 
