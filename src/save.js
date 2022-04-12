@@ -43,7 +43,7 @@ async function updateTripsWithManualEntries(
     )
     if (!savedTrip || savedTrip.length < 1) {
       log(
-        'error',
+        'warn',
         `No trip found for the manual entry from ${entry.data.start_fmt_time} to ${entry.data.end_fmt_time}`
       )
       continue
