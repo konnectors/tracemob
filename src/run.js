@@ -108,6 +108,8 @@ const run = async ({ fields, accountData, accountId }) => {
     log('error', err && err.message)
     if (err.statusCode === 403) {
       throw new Error(errors.LOGIN_FAILED)
+    } else if (err.statusCode === 500) {
+      throw new Error(`${errors.VENDOR_DOWN}.500_ERROR`)
     }
     throw new Error(errors.VENDOR_DOWN)
   }
