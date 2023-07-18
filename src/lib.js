@@ -1,3 +1,4 @@
+// @ts-check
 const { log } = require('cozy-konnector-libs')
 
 const {
@@ -22,19 +23,26 @@ function filterTripsByDate(trips, tripStartDates) {
  * Fetch trips metadata from the given data
  * @param {string} token - The user token
  * @param {Date} startDate - The starting date
- * @param {options} - The options
- * @returns {object[]} The trips metadata
+ * @param {object} options - The options
+ * @returns {Promise<object[]>} The trips metadata
  */
-module.exports.fetchTripsMetadata = async function(
+module.exports.fetchTripsMetadata = async function (
   token,
   startDate,
-  { excludeFirst = true }
+  { excludeFirst = true },
+  providerId
 ) {
   /* Get all the trips metadata from the given date */
   log('info', `Fetch trips metadata from ${startDate.toISOString()}`)
-  return getServerCollectionFromDate(token, startDate, TRIP_COLLECTION, {
-    excludeFirst
-  })
+  return getServerCollectionFromDate(
+    token,
+    startDate,
+    TRIP_COLLECTION,
+    {
+      excludeFirst
+    },
+    providerId
+  )
 }
 
 /**
@@ -42,13 +50,16 @@ module.exports.fetchTripsMetadata = async function(
  *
  * @param {string} token - The user token
  * @param {object[]} tripsMetadata - The trips metadata to fetch
- * @param {options} - The options
- * @returns {Date} The date of the last saved trip
+ * @param {object} option - The options
+  * @param {string} providerId - The ID of the provider
+
+ * @returns {Promise<Date| null>} The date of the last saved trip
  */
-module.exports.fetchAndSaveTrips = async function(
+module.exports.fetchAndSaveTrips = async function (
   token,
   tripsMetadata,
-  { accountId, device }
+  { accountId, device },
+  providerId
 ) {
   /* Extract the days having saved trips */
   log('info', `${tripsMetadata.length} new trips to retrieve`)
@@ -67,7 +78,7 @@ module.exports.fetchAndSaveTrips = async function(
 
   for (const day of Object.keys(tripDays)) {
     log('info', `Fetch trips on ${day}`)
-    const fullTripsForDay = await getTripsForDay(token, day)
+    const fullTripsForDay = await getTripsForDay(token, day, providerId)
     // The trips need to be filtered, as the day is not precise enough
     const filteredTrips = filterTripsByDate(fullTripsForDay, tripStartDates)
     tripsToSave = tripsToSave.concat(filteredTrips)
@@ -85,26 +96,29 @@ module.exports.fetchAndSaveTrips = async function(
  *
  * @param {string} token - The user token
  * @param {Date} startManualDate - The starting date
- * @param {options} - The options
- * @returns {Date} The date of the last saved manual data
+ * @param {object} options - The options
+ * @returns {Promise<Date | null>} The date of the last saved manual data
  */
-module.exports.fetchAndSaveManualEntries = async function(
+module.exports.fetchAndSaveManualEntries = async function (
   token,
   startManualDate,
-  { accountId, excludeFirst = true }
+  { accountId, excludeFirst = true },
+  providerId
 ) {
   /* Find manual entries */
   const manualPurposes = await getServerCollectionFromDate(
     token,
     startManualDate,
     PURPOSE_COLLECTION,
-    { excludeFirst }
+    { excludeFirst },
+    providerId
   )
   const manualModes = await getServerCollectionFromDate(
     token,
     startManualDate,
     MODE_COLLECTION,
-    { excludeFirst }
+    { excludeFirst },
+    providerId
   )
 
   /* Update trips accordingly to manual entries */

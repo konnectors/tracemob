@@ -1,5 +1,6 @@
+// @ts-check
 const requestFactory = require('cozy-konnector-libs/dist/libs/request')
-const { BASE_URL } = require('./const')
+const { getBaseURL } = require('./utils')
 const request = requestFactory({
   cheerio: false,
   json: true,
@@ -10,9 +11,12 @@ const request = requestFactory({
  * Get first and last trip dates
  *
  * @param {string} token - The user token
- * @returns {object} - The first and last trip timestamps
+ * @param {string} providerId - The ID of the provider
+ * @returns {Promise<object>} - The first and last trip timestamps
  */
-const getFirstAndLastTripTimestamp = async function(token) {
+const getFirstAndLastTripTimestamp = async function (token, providerId) {
+  const BASE_URL = getBaseURL(providerId)
+
   const path = `${BASE_URL}/pipeline/get_range_ts`
   const body = {
     user: token
@@ -26,14 +30,16 @@ const getFirstAndLastTripTimestamp = async function(token) {
  * @param {string} token - The user token
  * @param {Date} startDate - The starting date
  * @param {string} collection - The collection name
- * @param {options} - The options
- * @returns {object} - The request results
+ * @param {object} options - The options
+ * @param {string} providerId - The ID of the provider
+ * @returns {Promise<object>} - The request results
  */
-const getServerCollectionFromDate = async function(
+const getServerCollectionFromDate = async function (
   token,
   startDate,
   collection,
-  { excludeFirst = true } = {}
+  { excludeFirst = true } = {},
+  providerId
 ) {
   // Note the expected timestamp is in seconds
   const startTime = new Date(startDate).getTime() / 1000
@@ -44,6 +50,8 @@ const getServerCollectionFromDate = async function(
     end_time: endTime,
     key_list: [collection]
   }
+  const BASE_URL = getBaseURL(providerId)
+
   const path = `${BASE_URL}/datastreams/find_entries/timestamp`
   const results = await request(path, { method: 'POST', body })
   return excludeFirst ? results.phone_data.slice(1) : results.phone_data
@@ -54,9 +62,12 @@ const getServerCollectionFromDate = async function(
  *
  * @param {string} token - The user token
  * @param {string} day - The day on a YYYY-MM-DD format
- * @returns {object} - The full trips for this day
+ * @param {string} providerId - The ID of the provider
+ * @returns {Promise<object>} - The full trips for this day
  */
-const getTripsForDay = async function(token, day) {
+const getTripsForDay = async function (token, day, providerId) {
+  const BASE_URL = getBaseURL(providerId)
+
   const path = `${BASE_URL}/timeline/getTrips/${day}`
   const body = {
     user: token

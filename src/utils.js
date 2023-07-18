@@ -1,5 +1,7 @@
+// @ts-check
 const { chunk, differenceWith, sortBy, uniqBy } = require('lodash')
 const { findSavedTripByDates } = require('./queries')
+const { BASE_URLS } = require('./const')
 
 function canSaveNextTripsChunk(startExecTime, timeout) {
   const executionTimeSeconds = (new Date() - startExecTime) / 1000
@@ -49,10 +51,14 @@ function keepMoreRecentTripsWhenDuplicates(trips) {
   return uniqBy(sortedDescending, '_id')
 }
 
+function getBaseURL(providerId) {
+  return BASE_URLS[providerId]['URL']
+}
 module.exports = {
   canSaveNextTripsChunk,
   restartKonnector,
   createChunks,
   keepOnlyNewTrips,
-  keepMoreRecentTripsWhenDuplicates
+  keepMoreRecentTripsWhenDuplicates,
+  getBaseURL
 }

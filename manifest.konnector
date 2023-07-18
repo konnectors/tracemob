@@ -21,8 +21,12 @@
     },
     "providerId": {
       "type": "dropdown",
-      "default": "0",
+      "default": "1",
       "options": [
+        {
+          "name": "Cozy Cloud",
+          "value": "1"
+        },
         {
           "name": "La Rochelle",
           "value": "0"

@@ -1,3 +1,4 @@
+// @ts-check
 const cozyClient = require('cozy-konnector-libs/dist/libs/cozyclient')
 const errors = require('cozy-konnector-libs/dist/helpers/errors')
 const { log } = require('cozy-konnector-libs')
@@ -18,7 +19,10 @@ const { TRIPS_CHUNK_SIZE } = require('./const')
 const client = cozyClient.new
 
 const getTimeout = () => {
-  const maxExecutionTimeSeconds = parseInt(process.env.COZY_TIME_LIMIT, 10)
+  const maxExecutionTimeSeconds = parseInt(
+    process.env.COZY_TIME_LIMIT || '',
+    10
+  )
   return maxExecutionTimeSeconds - 100 // purely arbitrary
 }
 
@@ -32,6 +36,8 @@ const run = async ({ fields, accountData, accountId }) => {
   // TODO: the token might be retrieved directly in the account
   const token = fields.password
 
+  const providerId = fields.providerId
+
   /* Get the trips starting date */
   let startDate
   let startManualDate
@@ -44,7 +50,7 @@ const run = async ({ fields, accountData, accountId }) => {
       startManualDate = new Date(accountData.lastSavedManualDate)
     }
     if (!startDate) {
-      const timestamps = await getFirstAndLastTripTimestamp(token)
+      const timestamps = await getFirstAndLastTripTimestamp(token, providerId)
       if (!timestamps.start_ts || !timestamps.end_ts) {
         log('info', 'No trip saved yet. Abort.')
         return
@@ -58,9 +64,14 @@ const run = async ({ fields, accountData, accountId }) => {
 
     /* Extract the days having saved trips */
     log('info', `Fetch trips metadata from ${startDate.toISOString()}`)
-    const tripsMetadata = await fetchTripsMetadata(token, startDate, {
-      excludeFirst: !firstRun
-    })
+    const tripsMetadata = await fetchTripsMetadata(
+      token,
+      startDate,
+      {
+        excludeFirst: !firstRun
+      },
+      providerId
+    )
 
     /* Create chunks of trips to serialize execution */
     const tripChunks = createChunks(tripsMetadata, TRIPS_CHUNK_SIZE)
@@ -68,10 +79,15 @@ const run = async ({ fields, accountData, accountId }) => {
 
     for (const chunk of tripChunks) {
       /* Fetch new trips from the start date and save them in geojson doctype */
-      const lastSavedTripDate = await fetchAndSaveTrips(token, chunk, {
-        accountId,
-        device
-      })
+      const lastSavedTripDate = await fetchAndSaveTrips(
+        token,
+        chunk,
+        {
+          accountId,
+          device
+        },
+        providerId
+      )
       if (lastSavedTripDate) {
         log('info', `Save last trip date : ${lastSavedTripDate}`)
         await saveAccountData(accountId, { ...accountData, lastSavedTripDate })
@@ -97,7 +113,8 @@ const run = async ({ fields, accountData, accountId }) => {
       {
         accountId,
         excludeFirst: !firstRun
-      }
+      },
+      providerId
     )
 
     if (lastSavedManualDate) {

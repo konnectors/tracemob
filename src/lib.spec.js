@@ -1,3 +1,4 @@
+// @ts-check
 const { fetchAndSaveTrips, fetchAndSaveManualEntries } = require('./lib')
 
 const {
@@ -19,6 +20,7 @@ jest.mock('./trace-requests', () => ({
 const token = 'fake-token'
 
 describe('konnector', () => {
+  let providerId = '0'
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -77,13 +79,28 @@ describe('konnector', () => {
     getTripsForDay.mockResolvedValueOnce(fullTripsDay1)
     getTripsForDay.mockResolvedValueOnce(fullTripsDay2)
 
-    const lastTripDate = await fetchAndSaveTrips(token, mockedTrips, {
-      excludeFirst: false
-    })
+    const lastTripDate = await fetchAndSaveTrips(
+      token,
+      mockedTrips,
+      {
+        excludeFirst: false
+      },
+      providerId
+    )
 
     expect(getTripsForDay).toHaveBeenCalledTimes(2)
-    expect(getTripsForDay).toHaveBeenNthCalledWith(1, token, '2021-02-01')
-    expect(getTripsForDay).toHaveBeenNthCalledWith(2, token, '2021-02-02')
+    expect(getTripsForDay).toHaveBeenNthCalledWith(
+      1,
+      token,
+      '2021-02-01',
+      providerId
+    )
+    expect(getTripsForDay).toHaveBeenNthCalledWith(
+      2,
+      token,
+      '2021-02-02',
+      providerId
+    )
 
     expect(lastTripDate).toBe('2021-03-01T12:00:02')
   })
@@ -122,22 +139,29 @@ describe('konnector', () => {
     getServerCollectionFromDate.mockResolvedValueOnce(manualPurposes)
     getServerCollectionFromDate.mockResolvedValueOnce(manualModes)
 
-    const lastDate = await fetchAndSaveManualEntries(token, startDate, {
-      excludeFirst: false
-    })
+    const lastDate = await fetchAndSaveManualEntries(
+      token,
+      startDate,
+      {
+        excludeFirst: false
+      },
+      providerId
+    )
 
     expect(getServerCollectionFromDate).toHaveBeenCalledWith(
       token,
       startDate,
       'manual/purpose_confirm',
-      { excludeFirst: false }
+      { excludeFirst: false },
+      providerId
     )
 
     expect(getServerCollectionFromDate).toHaveBeenLastCalledWith(
       token,
       startDate,
       'manual/mode_confirm',
-      { excludeFirst: false }
+      { excludeFirst: false },
+      providerId
     )
 
     expect(updateTripsWithManualEntries).toHaveBeenCalledTimes(2)
