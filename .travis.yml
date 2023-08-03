@@ -1,0 +1,38 @@
+language: node_js
+node_js:
+- '16.18.1'
+env:
+  global:
+  - MATTERMOST_CHANNEL=publication
+  - secure: cmE2GKJXTJMI8Rg26/iJyiI4CoCievt0N8TUSCbfKkjj+o8vJck9+6vFC5tgre/iNn5Yzm0DC/TnDAyjVHnJnEy6tNsusyMOqbTLWnv+wnguRASM4LMhHWbxncVxb2E+4zHDD1sFLLUoXG1s0NWfJ6bf0nOrLPfcCQQ+vm0CTiggmWmP/BsF2peFzlRsik4hoBTSib3ZIcYcVULqb69IFqAZtZGwX9l3SuzTUijcXEGBwuOsEwqUpwdvRmDzb+q76IrwhBkAbg8Bil3vTmC7hrcXhfkV5bP+tg1CtOhsvNo9E/yCcrIgaNewE/8zeoEZyJmLegVcOzbjWhMwAPQwT6SbBKk81O/C+DbOmzXMRUPRFBrMOoeUweWEPGm035BbWcOipnpRScsVy1E+7dqGq69Q7v+XOkzMDOvcYeog5OpTblcCLqL8PyhrHKDmINnsXqJdvwDbH5ri2yJGARQtSoYo72IUNJSDB2BZmC+iAoB6C7idINvrTPDYdZqZYfw4FZCSjQEWqP7svJbkhfAuzINM8+/zF0p1BKImigDfiFND0270/zqBfYf+vMbDnj36VAthQ24v6utZkpyIJN2VjXB4ZF1uVfWVl8KCODkv01obXhzMrnmuRuUFwIi4kFEUCPJpGTfrzV8Rdjx6PlJIAIDXq4lmio2PLYHjuDudVJE=
+cache:
+  yarn: true
+  directories:
+  - node_modules
+branches:
+  except:
+  - build
+  - build-debug
+script:
+- yarn lint
+- yarn build
+deploy:
+- provider: script
+  skip-cleanup: true
+  script: DEPLOY_BRANCH=build yarn deploy && yarn cozyPublish
+  on:
+    branch: master
+- provider: script
+  skip-cleanup: true
+  script: DEPLOY_BRANCH=build yarn deploy && yarn cozyPublish
+  on:
+    tags: true
+before_install:
+- openssl aes-256-cbc -K $encrypted_8ebb1ef83f64_key -iv $encrypted_8ebb1ef83f64_iv
+  -in github_deploy_key.enc -out /tmp/github_deploy_key -d
+- eval "$(ssh-agent -s)"
+- chmod 600 /tmp/github_deploy_key
+- ssh-add /tmp/github_deploy_key
+after_deploy:
+- rm /tmp/github_deploy_key
+- ssh-add -D
