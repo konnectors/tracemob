@@ -1,0 +1,109 @@
+{
+  "version": "1.9.0",
+  "name": "Tracemob",
+  "type": "konnector",
+  "language": "node",
+  "icon": "icon.svg",
+  "slug": "tracemob",
+  "source": "git@github.com:konnectors/tracemob.git",
+  "editor": "Cozy",
+  "vendor_link": "https://agremob.com",
+  "categories": [
+    "transport"
+  ],
+  "frequency": "daily",
+  "fields": {
+    "login": {
+      "type": "email"
+    },
+    "password": {
+      "type": "password"
+    },
+    "providerId": {
+      "type": "dropdown",
+      "default": "1",
+      "options": [
+        {
+          "name": "Cozy Cloud",
+          "value": "1"
+        },
+        {
+          "name": "La Rochelle",
+          "value": "0"
+        }
+      ]
+    }
+  },
+  "data_types": [
+    "geojson"
+  ],
+  "screenshots": [],
+  "permissions": {
+    "accounts": {
+      "type": "io.cozy.accounts"
+    },
+    "geojson": {
+      "type": "io.cozy.timeseries.geojson"
+    },
+    "jobs": {
+      "type": "io.cozy.jobs"
+    }
+  },
+  "developer": {
+    "name": "Cozy Cloud",
+    "url": "https://cozy.io"
+  },
+  "langs": [
+    "fr",
+    "en"
+  ],
+  "locales": {
+    "fr": {
+      "short_description": "Récupère vos déplacements",
+      "long_description": "Récupère vos déplacements Agremob",
+      "permissions": {
+        "geojson": {
+          "description": "Utilisé pour sauvegarder vos déplacements"
+        },
+        "accounts": {
+          "description": "Utilisé pour obtenir les données du compte"
+        }
+      },
+      "fields": {
+        "providerId": {
+          "label": "Fournisseur du service"
+        },
+        "login": {
+          "label": "Identifiant libre (ex. \"Samsung personnel\")"
+        },
+        "password": {
+          "label": "Identifiant Secret (cf. Profil dans l'app Mobile)"
+        }
+      }
+    },
+    "en": {
+      "short_description": "Fetch your trips",
+      "long_description": "Fetch your trips from Agremob",
+      "permissions": {
+        "geojson": {
+          "description": "Required to save your trips"
+        },
+        "accounts": {
+          "description": "Required to get the account's data"
+        }
+      },
+      "fields": {
+        "providerId": {
+          "label": "Service provider"
+        },
+        "login": {
+          "label": "Free-to-choose identifier (ex. \"My Samsung\")"
+        },
+        "password": {
+          "label": "Secret identifier (see Profile in mobile app)"
+        }
+      }
+    }
+  },
+  "manifest_version": "2"
+}
