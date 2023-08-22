@@ -7,7 +7,7 @@
   "slug": "tracemob",
   "source": "git@github.com:konnectors/tracemob.git",
   "editor": "Cozy",
-  "vendor_link": "https://agremob.com",
+  "vendor_link": "https://cozy.io",
   "categories": [
     "transport"
   ],
