@@ -39,11 +39,11 @@
   "dependencies": {
     "cozy-client": "^40.3.0",
     "cozy-flags": "^3.0.1",
-    "cozy-konnector-libs": "5.5.0",
+    "cozy-konnector-libs": "5.5.1",
     "lodash": "4.17.21"
   },
   "devDependencies": {
-    "cozy-jobs-cli": "2.2.3",
+    "cozy-jobs-cli": "2.2.4",
     "cozy-konnector-build": "1.5.1",
     "jest": "27.5.1"
   }
