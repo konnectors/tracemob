@@ -1,6 +1,6 @@
 process.env.SENTRY_DSN =
   process.env.SENTRY_DSN ||
-  'https://066ea9e6f9c84ef9aeb1f1592caff488@sentry.cozycloud.cc/147'
+  'https://2d26a651b584ecce724c31d31eeee6c6@errors.cozycloud.cc/69'
 
 const BaseKonnector = require('cozy-konnector-libs/dist/libs/BaseKonnector')
 const run = require('./run')
