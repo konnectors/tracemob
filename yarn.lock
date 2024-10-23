@@ -3573,10 +3573,10 @@ cozy-flags@^2.8.7:
   dependencies:
     microee "^0.0.6"
 
-cozy-flags@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/cozy-flags/-/cozy-flags-3.0.1.tgz#ffb0f3e57f6e3d631f8fa420e866f0eacddd222a"
-  integrity sha512-+uvrrzchRxg2+M0a9uoCEJCLDLwe1DdmTgXlu56zFagqMQGCxgLSHLL7MrP/8cjt9LjgzVdqO4Mg+mDtAIqc/g==
+cozy-flags@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/cozy-flags/-/cozy-flags-4.0.3.tgz#9beedcdaf851e6bdea69a6e021bfcd8c7bac7dea"
+  integrity sha512-bQp0gdMZpaRO0oL+jO9YxIZJpb7RoLUSRQ7r8C/BsJd9/3+B+sXrOghfEqBB7FCUmUBsMh+ciTphyOIoQtEHIQ==
   dependencies:
     microee "^0.0.6"
 
